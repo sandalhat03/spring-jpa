@@ -1,0 +1,28 @@
+.hidden {
+	display: none;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+th, td {
+	padding: 5px;
+}
+
+label {
+	width: 100px;
+	display: inline-block;
+}
+
+.btnContainer {
+	padding: 5px 0;
+}
+
+.no-data td {
+	text-align: center;
+}
