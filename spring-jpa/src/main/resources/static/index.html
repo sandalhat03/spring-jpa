@@ -13,15 +13,35 @@
 		.hidden {
 			display: none;
 		}
+		
 		table {
-			border: thin;
+			border-collapse: collapse;
 		}
-	</style>
+		
+		table, th, td {
+			border: 1px solid black;
+		}
+		
+		th, td {
+			padding: 5px;
+		}
+		
+		label {
+			width: 100px;
+			display: inline-block;
+		}
+		.btnContainer {
+			padding: 5px 0;
+		}
+		.no-data td {
+			text-align: center;
+		}
+</style>
 </head>
 <body>
 
 <div>
-	<div>
+	<div class="btnContainer">
 		<button id="btnAddCustomer">Add Customer</button>
 	</div>
 	<div>
@@ -59,8 +79,8 @@
 					</td>
 					
 				</tr>
-				<tr>
-					<td colspan="7" class="no-data">No Data</td>
+				<tr class="no-data">
+					<td colspan="7">No Data</td>
 				</tr>
 			</tbody>
 		</table>
@@ -86,14 +106,14 @@
 		<div>
 		  	<label>Phone:</label><input name="phone">
 		</div>
-		<div>
+		<div class="btnContainer">
 			<button id="btnSaveCustomer">Save</button>
 		</div>
 	</form>
 </div>
 
 <div id="modalOrders" class="modal">
-	<div>
+	<div class="btnContainer">
 		<button id="btnAddOrder">Add Order</button>
 	</div>
 	<div>
@@ -104,6 +124,7 @@
 					<th>Order Date</th>
 					<th>Order Number</th>
 					<th>Total Amount</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -123,7 +144,7 @@
 					</td>
 				</tr>
 				<tr class="no-data">
-					<td colspan="4">No Data</td>
+					<td colspan="5">No Data</td>
 				</tr>
 			</tbody>
 		</table>
@@ -146,7 +167,7 @@
 		<div>
 		  	<label>Total Amount:</label><input name="totalAmount" type="number" step=".01">
 		</div>
-		<div>
+		<div class="btnContainer">
 			<button id="btnSaveOrder">Save</button>
 		</div>
 	</form>
