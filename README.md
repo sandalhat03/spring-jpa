@@ -11,3 +11,4 @@ mvn spring-boot:run
 ```
 ## Application Screen Capture
 ![application image](sample_application_image.png)
+![orders view](orders_view.png)
