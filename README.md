@@ -9,4 +9,5 @@ Go to spring-jpa folder and execute
 ```
 mvn spring-boot:run
 ```
+## Application Screen Capture
 ![application image](sample_application_image.png)
