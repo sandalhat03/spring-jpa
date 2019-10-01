@@ -9,4 +9,4 @@ Go to spring-jpa folder and execute
 ```
 mvn spring-boot:run
 ```
-![application image](sample application image.png)
+![application image](sample_application_image.png)
