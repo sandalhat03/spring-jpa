@@ -91,7 +91,7 @@ public class CustomerControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadGateway())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.FAILED_UNKOWN_REASON.getReason())));
+				.andExpect(jsonPath("$.reason", is(Status.FAILED_UNKNOWN_REASON.getReason())));
 	}
 	
 	

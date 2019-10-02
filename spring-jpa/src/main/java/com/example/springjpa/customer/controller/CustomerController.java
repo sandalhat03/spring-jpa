@@ -140,8 +140,8 @@ public class CustomerController {
 	@ExceptionHandler({ Exception.class })
 	@ResponseStatus( code = HttpStatus.BAD_GATEWAY )
 	public Status generalError(Exception ex) {
-		LOGGER.error("Unkown error.", ex);
+		LOGGER.error("Unknown error.", ex);
 		
-		return Status.FAILED_UNKOWN_REASON;
+		return Status.FAILED_UNKNOWN_REASON;
 	}
 }
