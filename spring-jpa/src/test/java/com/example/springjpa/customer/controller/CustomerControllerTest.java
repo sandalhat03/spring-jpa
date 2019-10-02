@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
 
 import com.example.springjpa.SpringJpaConfiguration;
-import com.example.springjpa.Status;
+import com.example.springjpa.common.Status;
 import com.example.springjpa.customer.dao.CustomerDao;
 import com.example.springjpa.customer.domain.Customer;
 import com.example.springjpa.customer.service.CustomerService;

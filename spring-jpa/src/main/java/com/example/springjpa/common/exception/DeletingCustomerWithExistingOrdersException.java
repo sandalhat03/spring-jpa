@@ -1,4 +1,4 @@
-package com.example.springjpa.exception;
+package com.example.springjpa.common.exception;
 
 public class DeletingCustomerWithExistingOrdersException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.example.springjpa;
+package com.example.springjpa.common;
 
 import java.util.stream.Collectors;
 

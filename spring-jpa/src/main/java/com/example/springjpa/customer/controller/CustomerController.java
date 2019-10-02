@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.springjpa.BaseController;
-import com.example.springjpa.Status;
+import com.example.springjpa.common.BaseController;
+import com.example.springjpa.common.Status;
+import com.example.springjpa.common.exception.DeletingCustomerWithExistingOrdersException;
 import com.example.springjpa.customer.domain.Customer;
 import com.example.springjpa.customer.service.CustomerService;
-import com.example.springjpa.exception.DeletingCustomerWithExistingOrdersException;
 
 /**
  * 

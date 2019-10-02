@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import com.example.springjpa.Status;
-import com.example.springjpa.exception.CustomerNotExistingForOrderException;
+import com.example.springjpa.common.Status;
+import com.example.springjpa.common.exception.CustomerNotExistingForOrderException;
 import com.example.springjpa.order.dao.OrderDao;
 import com.example.springjpa.order.domain.Order;
 

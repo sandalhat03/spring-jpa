@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.springjpa.BaseController;
-import com.example.springjpa.Status;
-import com.example.springjpa.exception.CustomerNotExistingForOrderException;
+import com.example.springjpa.common.BaseController;
+import com.example.springjpa.common.Status;
+import com.example.springjpa.common.exception.CustomerNotExistingForOrderException;
 import com.example.springjpa.order.domain.Order;
 import com.example.springjpa.order.service.OrderService;
 

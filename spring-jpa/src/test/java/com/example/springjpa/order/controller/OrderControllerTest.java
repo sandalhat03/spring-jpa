@@ -26,7 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
 
 import com.example.springjpa.SpringJpaConfiguration;
-import com.example.springjpa.Status;
+import com.example.springjpa.common.Status;
 import com.example.springjpa.order.dao.OrderDao;
 import com.example.springjpa.order.domain.Order;
 import com.example.springjpa.order.service.OrderService;
