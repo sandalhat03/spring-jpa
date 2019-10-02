@@ -8,11 +8,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "Order", catalog = "spring_jpa")
+@JsonInclude(Include.NON_NULL)
 public class Order {
 
 	@Id
@@ -22,12 +28,15 @@ public class Order {
 	@Column(name = "OrderDate")
 	private LocalDateTime orderDate;
 
+	@Size(max = 10, message = "Maximum of 10 characters only")
 	@Column(name = "OrderNumber")
 	private String orderNumber;
 
+	@NotNull(message = "Customer ID is required")
 	@Column(name="CustomerId")
 	private Integer customerId;
 
+	@Digits(fraction = 2, integer = 10, message = "Decimal precision upto 2 places only")
 	@Column(name = "TotalAmount")
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
 	private BigDecimal totalAmount;

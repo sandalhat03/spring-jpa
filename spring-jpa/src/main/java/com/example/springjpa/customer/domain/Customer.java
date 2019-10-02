@@ -8,8 +8,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 @Entity
 @Table(name = "Customer", catalog = "spring_jpa")
+@JsonInclude(Include.NON_NULL)
 public class Customer {
 	
 	@Id
