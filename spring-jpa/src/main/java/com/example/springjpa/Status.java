@@ -1,5 +1,7 @@
 package com.example.springjpa;
 
+import java.util.List;
+
 public class Status {
 	
 	public final static Status SUCCESS = new Status(true);
@@ -8,9 +10,13 @@ public class Status {
 	
 	public final static Status FAILED_UNKOWN_REASON = new Status(false, "Unkown error.");
 	
+	public final static String INVALID_INPUT = "Invalid Input";
+	
 	private boolean success;
 	
 	private String reason;
+	
+	private List<FieldError> fieldErrors;
 	
 	public Status() {
 		this(false);
@@ -41,4 +47,46 @@ public class Status {
 		this.reason = reason;
 	}
 
+	public List<FieldError> getFieldErrors() {
+		return fieldErrors;
+	}
+
+	public void setFieldErrors(List<FieldError> fieldErrors) {
+		this.fieldErrors = fieldErrors;
+	}
+
+	public static class FieldError {
+		
+		private String name;
+		
+		private Object value;
+		
+		private String message;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public Object getValue() {
+			return value;
+		}
+
+		public void setValue(Object value) {
+			this.value = value;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+
+		public void setMessage(String message) {
+			this.message = message;
+		}
+		
+		
+	}
 }

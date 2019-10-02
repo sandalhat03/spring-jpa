@@ -1,11 +1,15 @@
 package com.example.springjpa.customer.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,7 +77,7 @@ public class CustomerController {
 	 * @return Updated/Created Customer.
 	 */
 	@PostMapping
-	public Customer saveCustomer(@RequestBody Customer customer) {
+	public Customer saveCustomer(@Valid @RequestBody Customer customer) {
 
 		customer = customerService.saveCustomer(customer);
 
@@ -102,6 +106,30 @@ public class CustomerController {
 	public Status customerDeleteError() {
 
 		return Status.FAILED_DELETE_CUSTOMER_WITH_ORDERS;
+	}
+	
+	/**
+	 * Handles validation error
+	 * @param e MethodArgumentNotValidException validation exception
+	 * @return Status containing error details.
+	 */
+	@ExceptionHandler({ MethodArgumentNotValidException.class })
+	@ResponseStatus( code = HttpStatus.BAD_REQUEST )
+	public Status validationError(MethodArgumentNotValidException e) {
+
+		Status status = new Status(false, Status.INVALID_INPUT);
+		status.setFieldErrors(
+				e.getBindingResult().getFieldErrors().stream()
+				.map(err -> {
+					Status.FieldError field = new Status.FieldError();
+					field.setName(err.getField());
+					field.setValue(err.getRejectedValue());
+					field.setMessage(err.getDefaultMessage());
+					return field;
+				})
+				.collect(Collectors.toList()));
+		
+		return status;
 	}
 
 	/**
