@@ -32,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
 
 		} catch (DataIntegrityViolationException e) {
 
-			throw new CustomerNotExistingForOrderException();
+			throw new CustomerNotExistingForOrderException(e);
 		}
 	}
 

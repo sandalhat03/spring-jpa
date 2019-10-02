@@ -7,4 +7,8 @@ public class DeletingCustomerWithExistingOrdersException extends RuntimeExceptio
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public DeletingCustomerWithExistingOrdersException(Throwable cause) {
+		super(cause);
+	}
+
 }

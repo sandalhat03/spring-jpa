@@ -57,7 +57,7 @@ public class CustomerServiceImpl implements CustomerService {
 			
 		} catch (DataIntegrityViolationException e) {
 
-			throw new DeletingCustomerWithExistingOrdersException();
+			throw new DeletingCustomerWithExistingOrdersException(e);
 		}
 	}
 
