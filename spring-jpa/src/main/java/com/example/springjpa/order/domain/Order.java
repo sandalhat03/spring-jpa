@@ -28,15 +28,15 @@ public class Order {
 	@Column(name = "OrderDate")
 	private LocalDateTime orderDate;
 
-	@Size(max = 10, message = "Maximum of 10 characters only")
+	@Size(max = 10, message = "{error.max.10.chars}")
 	@Column(name = "OrderNumber")
 	private String orderNumber;
 
-	@NotNull(message = "Customer ID is required")
+	@NotNull(message = "{error.required.customer.id}")
 	@Column(name="CustomerId")
 	private Integer customerId;
 
-	@Digits(fraction = 2, integer = 10, message = "Decimal precision upto 2 places only")
+	@Digits(fraction = 2, integer = 10, message = "{error.dec.pricision.2}")
 	@Column(name = "TotalAmount")
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
 	private BigDecimal totalAmount;

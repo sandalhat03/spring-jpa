@@ -14,12 +14,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
 
+import com.example.springjpa.SpringJpaConfiguration;
 import com.example.springjpa.Status;
 import com.example.springjpa.customer.dao.CustomerDao;
 import com.example.springjpa.customer.domain.Customer;
@@ -29,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(CustomerController.class)
+@Import(value = SpringJpaConfiguration.class)
 public class CustomerControllerTest {
 
     @Autowired

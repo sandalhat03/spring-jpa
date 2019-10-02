@@ -20,25 +20,25 @@ public class Customer {
 	@GeneratedValue
 	private Integer id;
 	
-	@NotBlank(message = "First Name is required")
-	@Size(max = 40, message = "Maximum of 40 characters only")
+	@NotBlank(message = "{error.required.first.name}")
+	@Size(max = 40, message = "{error.max.40.chars}")
 	@Column(name = "FirstName")
 	private String firstName;
 
-	@NotBlank(message = "Last Name is required")
-	@Size(max = 40, message = "Maximum of 40 characters only")
+	@NotBlank(message = "{error.required.last.name}")
+	@Size(max = 40, message = "{error.max.40.chars}")
 	@Column(name = "LastName")
 	private String lastName;
 
-	@Size(max = 40, message = "Maximum of 40 characters only")
+	@Size(max = 40, message = "{error.max.40.chars}")
 	@Column(name = "City")
 	private String city;
 
-	@Size(max = 40, message = "Maximum of 40 characters only")
+	@Size(max = 40, message = "{error.max.40.chars}")
 	@Column(name = "Country")
 	private String country;
 
-	@Size(max = 20, message = "Maximum of 20 characters only")
+	@Size(max = 20, message = "{error.max.20.chars}")
 	@Column(name = "Phone")
 	private String phone;
 
