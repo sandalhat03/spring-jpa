@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.springjpa.common.BaseController;
 import com.example.springjpa.common.Status;
 import com.example.springjpa.common.exception.CustomerNotExistingForOrderException;
+import com.example.springjpa.common.exception.DeletingNotExistingOrderException;
 import com.example.springjpa.order.domain.Order;
 import com.example.springjpa.order.service.OrderService;
 
@@ -43,6 +44,7 @@ public class OrderController extends BaseController {
 	@Autowired
 	OrderService orderService;
 	
+	
 	/**
 	 * Create an order or update an existing customer's order.
 	 * 
@@ -55,6 +57,7 @@ public class OrderController extends BaseController {
 		return orderService.saveOrder(order);
 	}
 	
+	
 	/**
 	 * Delete an existing order by order ID
 	 * 
@@ -64,8 +67,11 @@ public class OrderController extends BaseController {
 	@DeleteMapping("/{orderId}")
 	public Status deleteOrder(@PathVariable("orderId") Integer orderId) {
 		
-		return orderService.deleteOrder(orderId);
+		orderService.deleteOrder(orderId);
+		
+		return Status.SUCCESS;
 	}
+	
 	
 	/**
 	 * Retrieve all orders of the specified customer.
@@ -89,7 +95,24 @@ public class OrderController extends BaseController {
 	public Status orderSaveCustomerNotExistingError(CustomerNotExistingForOrderException ex, Locale locale) {
 		LOGGER.warn("Save Order error. {}", ex.getMessage());
 		
-		String msg = messageSource.getMessage("error.save.order.nonexisting.customer", null, locale);
+		String msg = messageSource.getMessage("error.save.order.nonexisting.customer", 
+				new Object[]{ex.getCustomerId()}, locale);
+
+		return new Status(false, msg);
+	}
+	
+	
+	/**
+	 * Handling for deleting Order
+	 * @return Status containing error details.
+	 */
+	@ExceptionHandler({ DeletingNotExistingOrderException.class })
+	@ResponseStatus( code = HttpStatus.CONFLICT )
+	public Status orderDeleteError(DeletingNotExistingOrderException ex, Locale locale) {
+		LOGGER.warn("Delete Order error. {}", ex.getMessage());
+		
+		String msg = messageSource.getMessage("error.delete.nonexisting.order", 
+					new Object[]{ex.getOrderId()}, locale);
 		
 		return new Status(false, msg);
 	}

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.springjpa.common.BaseController;
 import com.example.springjpa.common.Status;
 import com.example.springjpa.common.exception.DeletingCustomerWithExistingOrdersException;
+import com.example.springjpa.common.exception.DeletingNonExistingCustomerException;
 import com.example.springjpa.customer.domain.Customer;
 import com.example.springjpa.customer.service.CustomerService;
 
@@ -93,20 +94,35 @@ public class CustomerController extends BaseController {
 	@DeleteMapping("/{customerId}")
 	public Status deleteCustomer(@PathVariable("customerId") Integer customerId) {
 
-		return customerService.deleteCustomer(customerId);
+		customerService.deleteCustomer(customerId);
+		
+		return Status.SUCCESS;
 	}
 
 	
 	/**
-	 * Handling for deleting a Customer with existing Orders
+	 * Handling for deleting a Customer errors.
 	 * @return Status containing error details.
 	 */
-	@ExceptionHandler({ DeletingCustomerWithExistingOrdersException.class })
+	@ExceptionHandler({ 
+		DeletingCustomerWithExistingOrdersException.class,
+		DeletingNonExistingCustomerException.class })
 	@ResponseStatus( code = HttpStatus.CONFLICT )
-	public Status customerDeleteError(DeletingCustomerWithExistingOrdersException ex, Locale locale) {
+	public Status customerDeleteError(Exception ex, Locale locale) {
 		LOGGER.warn("Delete Customer error. {}", ex.getMessage());
 		
-		String msg = messageSource.getMessage("error.delete.customer.with.order", null, locale);
+		String msg = "Server error";
+		
+		if( ex instanceof DeletingCustomerWithExistingOrdersException ) {
+			
+			msg = messageSource.getMessage("error.delete.customer.with.order", null, locale);
+			
+		} else if( ex instanceof DeletingNonExistingCustomerException ) {
+			
+			msg = messageSource.getMessage("error.delete.nonexisting.customer", 
+					new Object[]{((DeletingNonExistingCustomerException) ex).getCustomerId()}, locale);
+			
+		}
 		
 		return new Status(false, msg);
 	}

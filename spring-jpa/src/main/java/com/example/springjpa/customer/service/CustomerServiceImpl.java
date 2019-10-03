@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.springjpa.common.Status;
 import com.example.springjpa.common.exception.DeletingCustomerWithExistingOrdersException;
+import com.example.springjpa.common.exception.DeletingNonExistingCustomerException;
 import com.example.springjpa.customer.dao.CustomerDao;
 import com.example.springjpa.customer.domain.Customer;
 import com.example.springjpa.order.service.OrderService;
@@ -51,20 +51,21 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public Status deleteCustomer(Integer customerId) {
+	public void deleteCustomer(Integer customerId) {
+		
+		boolean customerExists = customerDao.findById(customerId).isPresent();
+		
+		if( !customerExists ) {
+			throw new DeletingNonExistingCustomerException(customerId);
+		}
 		
 		boolean emptyOrders = orderService.getOrdersByCustomerId(customerId).isEmpty();
 		
-		if( emptyOrders ) {
-		
-			customerDao.deleteById(customerId);
-			
-			return Status.SUCCESS;
-			
-		} else {
-			
+		if( !emptyOrders ) {
 			throw new DeletingCustomerWithExistingOrdersException();
-		}
+		} 
+		
+		customerDao.deleteById(customerId);
 	}
 
 }

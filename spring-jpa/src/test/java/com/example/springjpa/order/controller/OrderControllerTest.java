@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -181,7 +182,7 @@ public class OrderControllerTest {
 				.content(asJsonString(expectedOrder)))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is("Can not save order. Customer does not exists.")));
+				.andExpect(jsonPath("$.reason", is("Can not save order. Customer [10] does not exists.")));
 		
 		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Order.class));
 	}
@@ -204,7 +205,7 @@ public class OrderControllerTest {
 				.content(asJsonString(expectedOrder)))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is("Hindi maaaring i-save ang order. Hindi mahanap ang customer.")));
+				.andExpect(jsonPath("$.reason", is("Hindi maaaring i-save ang order. Hindi mahanap ang customer [10].")));
 		
 		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Order.class));
 	}
@@ -319,6 +320,8 @@ public class OrderControllerTest {
 	@Test
 	public void testOrderrDelete_Success() throws Exception {
 		
+		Mockito.when(dao.findById(Mockito.anyInt())).thenReturn(Optional.of(new Order()));
+		
 		mvc.perform(delete("/api/orders/2")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -327,6 +330,21 @@ public class OrderControllerTest {
 				.andExpect(jsonPath("$.fieldErrors", isEmptyOrNullString()));
 		
 		Mockito.verify(dao, Mockito.times(1)).deleteById(Mockito.any(Integer.class));
+	}
+	
+	
+	@Test
+	public void testOrderDelete_FailedNotExistingOrder() throws Exception {
+		
+		Mockito.when(dao.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(null));
+		
+		mvc.perform(delete("/api/orders/2")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.success", is(false)))
+				.andExpect(jsonPath("$.reason", is("Can not delete order. Order [2] does not exists.")));
+		
+		Mockito.verify(dao, Mockito.never()).deleteById(Mockito.any(Integer.class));
 	}
 
 }

@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.springjpa.common.Status;
 import com.example.springjpa.common.exception.CustomerNotExistingForOrderException;
+import com.example.springjpa.common.exception.DeletingNotExistingOrderException;
 import com.example.springjpa.customer.domain.Customer;
 import com.example.springjpa.customer.service.CustomerService;
 import com.example.springjpa.order.dao.OrderDao;
@@ -38,17 +38,21 @@ public class OrderServiceImpl implements OrderService {
 
 		} else {
 
-			throw new CustomerNotExistingForOrderException("Customer ID [" + order.getCustomerId() + "] does not exists.");
+			throw new CustomerNotExistingForOrderException(order.getCustomerId());
 
 		}
 	}
 
 	@Override
-	public Status deleteOrder(Integer orderId) {
+	public void deleteOrder(Integer orderId) {
+		
+		boolean orderExists = orderDao.findById(orderId).isPresent();
+		
+		if( !orderExists ) {
+			throw new DeletingNotExistingOrderException(orderId);
+		}
 
 		orderDao.deleteById(orderId);
-
-		return Status.SUCCESS;
 
 	}
 

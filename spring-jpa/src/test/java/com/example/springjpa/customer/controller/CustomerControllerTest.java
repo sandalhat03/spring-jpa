@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -388,6 +389,8 @@ public class CustomerControllerTest {
 	@Test
 	public void testCustomerDelete_Success() throws Exception {
 		
+		Mockito.when(customerDao.findById(Mockito.anyInt())).thenReturn(Optional.of(new Customer()));
+		
 		mvc.perform(delete("/api/customers/2")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -402,6 +405,7 @@ public class CustomerControllerTest {
 	@Test
 	public void testCustomerDelete_FailedExistingOrder() throws Exception {
 		
+		Mockito.when(customerDao.findById(Mockito.anyInt())).thenReturn(Optional.of(new Customer()));
 		Mockito.when(orderService.getOrdersByCustomerId(Mockito.anyInt())).thenReturn(Arrays.asList(new Order()));
 		
 		mvc.perform(delete("/api/customers/2")
@@ -417,6 +421,7 @@ public class CustomerControllerTest {
 	@Test
 	public void testCustomerDelete_FailedExistingOrder_Locale_ph() throws Exception {
 		
+		Mockito.when(customerDao.findById(Mockito.anyInt())).thenReturn(Optional.of(new Customer()));
 		Mockito.when(orderService.getOrdersByCustomerId(Mockito.anyInt())).thenReturn(Arrays.asList(new Order()));
 		
 		mvc.perform(delete("/api/customers/2?lang=ph")
@@ -425,6 +430,22 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.success", is(false)))
 				.andExpect(jsonPath("$.reason", is("Unahing tanggalin ang mga order ng customer bago burahin ang customer.")));
 		
+		Mockito.verify(customerDao, Mockito.never()).deleteById(Mockito.any(Integer.class));
+	}
+	
+	
+	@Test
+	public void testCustomerDelete_FailedNotExistingCustomer() throws Exception {
+		
+		Mockito.when(customerDao.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(null));
+		
+		mvc.perform(delete("/api/customers/2")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.success", is(false)))
+				.andExpect(jsonPath("$.reason", is("Can not delete customer. Customer [2] does not exists.")));
+		
+		Mockito.verify(orderService, Mockito.never()).getOrdersByCustomerId(Mockito.anyInt());
 		Mockito.verify(customerDao, Mockito.never()).deleteById(Mockito.any(Integer.class));
 	}
 

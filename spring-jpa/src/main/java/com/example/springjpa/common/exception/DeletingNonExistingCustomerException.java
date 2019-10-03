@@ -1,16 +1,16 @@
 package com.example.springjpa.common.exception;
 
-public class CustomerNotExistingForOrderException extends RuntimeException {
+public class DeletingNonExistingCustomerException extends RuntimeException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
 	private Integer customerId;
 	
-	public CustomerNotExistingForOrderException(Integer customerId) {
-		super(String.format("Customer ID [%d] does not exists.", customerId));
+	public DeletingNonExistingCustomerException(Integer customerId) {
+		super(String.format("Customer [%d] does not exists.", customerId));
 		this.customerId = customerId;
 	}
 
