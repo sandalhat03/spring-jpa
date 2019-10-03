@@ -1,9 +1,12 @@
 package com.example.springjpa.common;
 
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +24,10 @@ public class BaseController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseController.class);
 	
 	
+	@Autowired
+	protected MessageSource messageSource;
+	
+	
 	/**
 	 * Handles validation error
 	 * @param e MethodArgumentNotValidException validation exception
@@ -28,9 +35,11 @@ public class BaseController {
 	 */
 	@ExceptionHandler({ MethodArgumentNotValidException.class })
 	@ResponseStatus( code = HttpStatus.BAD_REQUEST )
-	public Status validationError(MethodArgumentNotValidException e) {
+	public Status validationError(MethodArgumentNotValidException e, Locale locale) {
 
-		Status status = new Status(false, Status.INVALID_INPUT);
+		String msg = messageSource.getMessage("error.invalid.input", null, locale);
+		Status status = new Status(false, msg);
+		
 		status.setFieldErrors(
 				e.getBindingResult().getFieldErrors().stream()
 				.map(err -> {
@@ -53,10 +62,12 @@ public class BaseController {
 	 */
 	@ExceptionHandler({ Exception.class })
 	@ResponseStatus( code = HttpStatus.BAD_GATEWAY )
-	public Status generalError(Exception ex) {
+	public Status generalError(Exception ex, Locale locale) {
 		LOGGER.error("Unknown error.", ex);
 		
-		return Status.FAILED_UNKNOWN_REASON;
+		String msg = messageSource.getMessage("error.unexpected.exception", null, locale);
+		
+		return new Status(false, msg);
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.example.springjpa.order.controller;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.validation.Valid;
 
@@ -85,10 +86,12 @@ public class OrderController extends BaseController {
 	 */
 	@ExceptionHandler({ CustomerNotExistingForOrderException.class })
 	@ResponseStatus( code = HttpStatus.CONFLICT )
-	public Status orderSaveCustomerNotExistingError(CustomerNotExistingForOrderException ex) {
-		LOGGER.error("Save Order error.", ex);
+	public Status orderSaveCustomerNotExistingError(CustomerNotExistingForOrderException ex, Locale locale) {
+		LOGGER.warn("Save Order error. {}", ex.getMessage());
 		
-		return Status.FAILED_CREATE_ORDER_NOT_EXISTING_CUSTOMER;
+		String msg = messageSource.getMessage("error.save.order.nonexisting.customer", null, locale);
+		
+		return new Status(false, msg);
 	}
 
 }

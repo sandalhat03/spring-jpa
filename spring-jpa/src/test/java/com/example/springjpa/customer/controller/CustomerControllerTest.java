@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
 
 import com.example.springjpa.SpringJpaConfiguration;
-import com.example.springjpa.common.Status;
 import com.example.springjpa.customer.dao.CustomerDao;
 import com.example.springjpa.customer.domain.Customer;
 import com.example.springjpa.customer.service.CustomerService;
@@ -94,7 +93,20 @@ public class CustomerControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadGateway())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.FAILED_UNKNOWN_REASON.getReason())));
+				.andExpect(jsonPath("$.reason", is("Internal server error")));
+	}
+	
+	
+	@Test
+	public void testCustomerList_UnexpectedError_Locale_ph() throws Exception {
+		
+		Mockito.when(dao.findAll()).thenThrow(RuntimeException.class);
+		
+		mvc.perform(get("/api/customers?lang=ph")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadGateway())
+				.andExpect(jsonPath("$.success", is(false)))
+				.andExpect(jsonPath("$.reason", is("Problema sa server")));
 	}
 	
 	
@@ -140,7 +152,7 @@ public class CustomerControllerTest {
 				.content(asJsonString(expectedCustomer)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("firstName")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
@@ -166,7 +178,7 @@ public class CustomerControllerTest {
 				.content(asJsonString(expectedCustomer)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("firstName")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
@@ -194,7 +206,7 @@ public class CustomerControllerTest {
 				.content(asJsonString(expectedCustomer)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("firstName")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_41_chars)))
@@ -220,7 +232,7 @@ public class CustomerControllerTest {
 				.content(asJsonString(expectedCustomer)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("lastName")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
@@ -246,7 +258,7 @@ public class CustomerControllerTest {
 				.content(asJsonString(expectedCustomer)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("lastName")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
@@ -274,7 +286,7 @@ public class CustomerControllerTest {
 				.content(asJsonString(expectedCustomer)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("lastName")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_41_chars)))
@@ -302,7 +314,7 @@ public class CustomerControllerTest {
 				.content(asJsonString(expectedCustomer)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("city")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_41_chars)))
@@ -330,7 +342,7 @@ public class CustomerControllerTest {
 				.content(asJsonString(expectedCustomer)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("country")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_41_chars)))
@@ -358,7 +370,7 @@ public class CustomerControllerTest {
 				.content(asJsonString(expectedCustomer)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("phone")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_21_chars)))
@@ -391,7 +403,22 @@ public class CustomerControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.FAILED_DELETE_CUSTOMER_WITH_ORDERS.getReason())));
+				.andExpect(jsonPath("$.reason", is("Kindly delete customer's orders first before deleting customer.")));
+		
+		Mockito.verify(dao, Mockito.times(1)).deleteById(Mockito.any(Integer.class));
+	}
+	
+	
+	@Test
+	public void testCustomerDelete_FailedExistingOrder_Locale_ph() throws Exception {
+		
+		Mockito.doThrow(DataIntegrityViolationException.class).when(dao).deleteById(Mockito.any(Integer.class));
+		
+		mvc.perform(delete("/api/customers/2?lang=ph")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.success", is(false)))
+				.andExpect(jsonPath("$.reason", is("Unahing tanggalin ang mga order ng customer bago burahin ang customer.")));
 		
 		Mockito.verify(dao, Mockito.times(1)).deleteById(Mockito.any(Integer.class));
 	}

@@ -118,7 +118,20 @@ public class OrderControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadGateway())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.FAILED_UNKNOWN_REASON.getReason())));
+				.andExpect(jsonPath("$.reason", is("Internal server error")));
+	}
+	
+	
+	@Test
+	public void testOrderList_UnexpectedError_Locale_ph() throws Exception {
+		
+		Mockito.when(dao.findOderByCustomerId(Mockito.eq(10))).thenThrow(RuntimeException.class);
+		
+		mvc.perform(get("/api/orders?customerId=10&lang=ph")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadGateway())
+				.andExpect(jsonPath("$.success", is(false)))
+				.andExpect(jsonPath("$.reason", is("Problema sa server")));
 	}
 	
 	
@@ -163,7 +176,28 @@ public class OrderControllerTest {
 				.content(asJsonString(expectedOrder)))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.FAILED_CREATE_ORDER_NOT_EXISTING_CUSTOMER.getReason())));
+				.andExpect(jsonPath("$.reason", is("Can not save order. Customer does not exists.")));
+	}
+	
+	
+	@Test
+	public void testOrderSave_FailedNotExistingCustomer_Locale_ph() throws Exception {
+		
+		Order expectedOrder = new Order();
+		expectedOrder.setId(99);
+		expectedOrder.setCustomerId(10);
+		expectedOrder.setOrderDate(LocalDateTime.of(2000, 12, 12, 13, 45, 5, 1));
+		expectedOrder.setOrderNumber("11111");
+		expectedOrder.setTotalAmount(new BigDecimal("999.99"));
+		
+		Mockito.when(dao.save(Mockito.any(Order.class))).thenThrow(DataIntegrityViolationException.class);
+		
+		mvc.perform(post("/api/orders?lang=ph")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(expectedOrder)))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.success", is(false)))
+				.andExpect(jsonPath("$.reason", is("Hindi maaaring i-save ang order. Hindi mahanap ang customer.")));
 	}
 	
 	
@@ -182,7 +216,7 @@ public class OrderControllerTest {
 				.content(asJsonString(expectedOrder)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("customerId")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
@@ -209,7 +243,7 @@ public class OrderControllerTest {
 				.content(asJsonString(expectedOrder)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("orderNumber")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_11_chars)))
@@ -234,7 +268,7 @@ public class OrderControllerTest {
 				.content(asJsonString(expectedOrder)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Invalid input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("totalAmount")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(expectedOrder.getTotalAmount().doubleValue())))
@@ -273,7 +307,7 @@ public class OrderControllerTest {
 				.content(asJsonString(expectedOrder)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.success", is(false)))
-				.andExpect(jsonPath("$.reason", is(Status.INVALID_INPUT)))
+				.andExpect(jsonPath("$.reason", is("Problema sa input")))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(1)))
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("totalAmount")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(expectedOrder.getTotalAmount().doubleValue())))

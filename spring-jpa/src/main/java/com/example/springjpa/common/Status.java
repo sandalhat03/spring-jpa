@@ -6,14 +6,6 @@ public class Status {
 	
 	public final static Status SUCCESS = new Status(true);
 	
-	public final static Status FAILED_DELETE_CUSTOMER_WITH_ORDERS = new Status(false, "Can not delete customer with existing orders.");
-	
-	public final static Status FAILED_CREATE_ORDER_NOT_EXISTING_CUSTOMER = new Status(false, "Can not create order for not existing customer.");
-	
-	public final static Status FAILED_UNKNOWN_REASON = new Status(false, "Unknown error.");
-	
-	public final static String INVALID_INPUT = "Invalid Input";
-	
 	private boolean success;
 	
 	private String reason;

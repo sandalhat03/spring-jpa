@@ -1,6 +1,7 @@
 package com.example.springjpa.customer.controller;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.validation.Valid;
 
@@ -102,10 +103,12 @@ public class CustomerController extends BaseController {
 	 */
 	@ExceptionHandler({ DeletingCustomerWithExistingOrdersException.class })
 	@ResponseStatus( code = HttpStatus.CONFLICT )
-	public Status customerDeleteError(DeletingCustomerWithExistingOrdersException ex) {
-		LOGGER.error("Delete Customer error.", ex);
+	public Status customerDeleteError(DeletingCustomerWithExistingOrdersException ex, Locale locale) {
+		LOGGER.warn("Delete Customer error. {}", ex.getMessage());
 		
-		return Status.FAILED_DELETE_CUSTOMER_WITH_ORDERS;
+		String msg = messageSource.getMessage("error.delete.customer.with.order", null, locale);
+		
+		return new Status(false, msg);
 	}
 	
 }
