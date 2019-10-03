@@ -9,23 +9,24 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.mockito.Mockito;
 
 import com.example.springjpa.SpringJpaConfiguration;
 import com.example.springjpa.customer.dao.CustomerDao;
 import com.example.springjpa.customer.domain.Customer;
 import com.example.springjpa.customer.service.CustomerService;
 import com.example.springjpa.customer.service.CustomerServiceImpl;
+import com.example.springjpa.order.domain.Order;
+import com.example.springjpa.order.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
@@ -37,7 +38,10 @@ public class CustomerControllerTest {
     private MockMvc mvc;
  
     @MockBean
-    private CustomerDao dao;
+    private CustomerDao customerDao;
+    
+    @MockBean
+    private OrderService orderService;
     
     @TestConfiguration
     static class CustomerControllerTestConfiguration {
@@ -46,6 +50,7 @@ public class CustomerControllerTest {
         public CustomerService customerService() {
             return new CustomerServiceImpl();
         }
+        
     }
     
     /**
@@ -63,7 +68,7 @@ public class CustomerControllerTest {
 	@Test
 	public void testCustomerList_SuccessCustomerRetrieval() throws Exception {
 		
-		Mockito.when(dao.findAll()).thenReturn(Arrays.asList(new Customer(), new Customer(), new Customer()));
+		Mockito.when(customerDao.findAll()).thenReturn(Arrays.asList(new Customer(), new Customer(), new Customer()));
 		
 		mvc.perform(get("/api/customers")
 				.contentType(MediaType.APPLICATION_JSON))
@@ -75,7 +80,7 @@ public class CustomerControllerTest {
 	@Test
 	public void testCustomerList_SuccessCustomerRetrieval_Empty() throws Exception {
 		
-		Mockito.when(dao.findAll()).thenReturn(new ArrayList<Customer>());
+		Mockito.when(customerDao.findAll()).thenReturn(new ArrayList<Customer>());
 		
 		mvc.perform(get("/api/customers")
 				.contentType(MediaType.APPLICATION_JSON))
@@ -87,7 +92,7 @@ public class CustomerControllerTest {
 	@Test
 	public void testCustomerList_UnexpectedError() throws Exception {
 		
-		Mockito.when(dao.findAll()).thenThrow(RuntimeException.class);
+		Mockito.when(customerDao.findAll()).thenThrow(RuntimeException.class);
 		
 		mvc.perform(get("/api/customers")
 				.contentType(MediaType.APPLICATION_JSON))
@@ -100,7 +105,7 @@ public class CustomerControllerTest {
 	@Test
 	public void testCustomerList_UnexpectedError_Locale_ph() throws Exception {
 		
-		Mockito.when(dao.findAll()).thenThrow(RuntimeException.class);
+		Mockito.when(customerDao.findAll()).thenThrow(RuntimeException.class);
 		
 		mvc.perform(get("/api/customers?lang=ph")
 				.contentType(MediaType.APPLICATION_JSON))
@@ -121,7 +126,7 @@ public class CustomerControllerTest {
 		expectedCustomer.setCountry("Philippines");
 		expectedCustomer.setPhone("123123");
 		
-		Mockito.when(dao.save(Mockito.any(Customer.class))).thenReturn(expectedCustomer);
+		Mockito.when(customerDao.save(Mockito.any(Customer.class))).thenReturn(expectedCustomer);
 		
 		mvc.perform(post("/api/customers")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +163,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("First Name is required")));
 		
-		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Customer.class));
+		Mockito.verify(customerDao, Mockito.never()).save(Mockito.any(Customer.class));
 	}
 	
 	
@@ -184,7 +189,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("First Name is required")));
 		
-		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Customer.class));
+		Mockito.verify(customerDao, Mockito.never()).save(Mockito.any(Customer.class));
 	}
 	
 	
@@ -212,7 +217,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_41_chars)))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Maximum of 40 characters only")));
 		
-		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Customer.class));
+		Mockito.verify(customerDao, Mockito.never()).save(Mockito.any(Customer.class));
 	}
 	
 	
@@ -238,7 +243,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Last Name is required")));
 		
-		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Customer.class));
+		Mockito.verify(customerDao, Mockito.never()).save(Mockito.any(Customer.class));
 	}
 	
 	
@@ -264,7 +269,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Last Name is required")));
 		
-		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Customer.class));
+		Mockito.verify(customerDao, Mockito.never()).save(Mockito.any(Customer.class));
 	}
 	
 	
@@ -292,7 +297,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_41_chars)))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Maximum of 40 characters only")));
 		
-		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Customer.class));
+		Mockito.verify(customerDao, Mockito.never()).save(Mockito.any(Customer.class));
 	}
 	
 	
@@ -320,7 +325,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_41_chars)))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Maximum of 40 characters only")));
 		
-		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Customer.class));
+		Mockito.verify(customerDao, Mockito.never()).save(Mockito.any(Customer.class));
 	}
 	
 	
@@ -348,7 +353,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_41_chars)))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Maximum of 40 characters only")));
 		
-		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Customer.class));
+		Mockito.verify(customerDao, Mockito.never()).save(Mockito.any(Customer.class));
 	}
 	
 	
@@ -376,7 +381,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_21_chars)))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Maximum of 20 characters only")));
 		
-		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Customer.class));
+		Mockito.verify(customerDao, Mockito.never()).save(Mockito.any(Customer.class));
 	}
 	
 	
@@ -390,14 +395,14 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.reason", isEmptyOrNullString()))
 				.andExpect(jsonPath("$.fieldErrors", isEmptyOrNullString()));
 		
-		Mockito.verify(dao, Mockito.times(1)).deleteById(Mockito.any(Integer.class));
+		Mockito.verify(customerDao, Mockito.times(1)).deleteById(Mockito.any(Integer.class));
 	}
 	
 	
 	@Test
 	public void testCustomerDelete_FailedExistingOrder() throws Exception {
 		
-		Mockito.doThrow(DataIntegrityViolationException.class).when(dao).deleteById(Mockito.any(Integer.class));
+		Mockito.when(orderService.getOrdersByCustomerId(Mockito.anyInt())).thenReturn(Arrays.asList(new Order()));
 		
 		mvc.perform(delete("/api/customers/2")
 				.contentType(MediaType.APPLICATION_JSON))
@@ -405,14 +410,14 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.success", is(false)))
 				.andExpect(jsonPath("$.reason", is("Kindly delete customer's orders first before deleting customer.")));
 		
-		Mockito.verify(dao, Mockito.times(1)).deleteById(Mockito.any(Integer.class));
+		Mockito.verify(customerDao, Mockito.never()).deleteById(Mockito.any(Integer.class));
 	}
 	
 	
 	@Test
 	public void testCustomerDelete_FailedExistingOrder_Locale_ph() throws Exception {
 		
-		Mockito.doThrow(DataIntegrityViolationException.class).when(dao).deleteById(Mockito.any(Integer.class));
+		Mockito.when(orderService.getOrdersByCustomerId(Mockito.anyInt())).thenReturn(Arrays.asList(new Order()));
 		
 		mvc.perform(delete("/api/customers/2?lang=ph")
 				.contentType(MediaType.APPLICATION_JSON))
@@ -420,7 +425,7 @@ public class CustomerControllerTest {
 				.andExpect(jsonPath("$.success", is(false)))
 				.andExpect(jsonPath("$.reason", is("Unahing tanggalin ang mga order ng customer bago burahin ang customer.")));
 		
-		Mockito.verify(dao, Mockito.times(1)).deleteById(Mockito.any(Integer.class));
+		Mockito.verify(customerDao, Mockito.never()).deleteById(Mockito.any(Integer.class));
 	}
 
 }

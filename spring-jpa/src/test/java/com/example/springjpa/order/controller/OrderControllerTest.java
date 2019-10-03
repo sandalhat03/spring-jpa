@@ -19,14 +19,14 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
 
 import com.example.springjpa.SpringJpaConfiguration;
-import com.example.springjpa.common.Status;
+import com.example.springjpa.customer.domain.Customer;
+import com.example.springjpa.customer.service.CustomerService;
 import com.example.springjpa.order.dao.OrderDao;
 import com.example.springjpa.order.domain.Order;
 import com.example.springjpa.order.service.OrderService;
@@ -43,6 +43,9 @@ public class OrderControllerTest {
  
     @MockBean
     private OrderDao dao;
+    
+    @MockBean
+    private CustomerService customerService;
     
     @TestConfiguration
     static class OrderControllerTestConfiguration {
@@ -137,13 +140,15 @@ public class OrderControllerTest {
 	
 	@Test
 	public void testOrderSave_Success() throws Exception {
-		
+	
 		Order expectedOrder = new Order();
 		expectedOrder.setId(99);
 		expectedOrder.setCustomerId(10);
 		expectedOrder.setOrderDate(LocalDateTime.of(2000, 12, 12, 13, 45, 5, 1));
 		expectedOrder.setOrderNumber("11111");
 		expectedOrder.setTotalAmount(new BigDecimal("999.99"));
+		
+		Mockito.when(customerService.getCustomer(expectedOrder.getCustomerId())).thenReturn(new Customer());
 		
 		Mockito.when(dao.save(Mockito.any(Order.class))).thenReturn(expectedOrder);
 		
@@ -169,7 +174,7 @@ public class OrderControllerTest {
 		expectedOrder.setOrderNumber("11111");
 		expectedOrder.setTotalAmount(new BigDecimal("999.99"));
 		
-		Mockito.when(dao.save(Mockito.any(Order.class))).thenThrow(DataIntegrityViolationException.class);
+		Mockito.when(customerService.getCustomer(expectedOrder.getCustomerId())).thenReturn(null);
 		
 		mvc.perform(post("/api/orders")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -177,6 +182,8 @@ public class OrderControllerTest {
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.success", is(false)))
 				.andExpect(jsonPath("$.reason", is("Can not save order. Customer does not exists.")));
+		
+		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Order.class));
 	}
 	
 	
@@ -190,7 +197,7 @@ public class OrderControllerTest {
 		expectedOrder.setOrderNumber("11111");
 		expectedOrder.setTotalAmount(new BigDecimal("999.99"));
 		
-		Mockito.when(dao.save(Mockito.any(Order.class))).thenThrow(DataIntegrityViolationException.class);
+		Mockito.when(customerService.getCustomer(expectedOrder.getCustomerId())).thenReturn(null);
 		
 		mvc.perform(post("/api/orders?lang=ph")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -198,6 +205,8 @@ public class OrderControllerTest {
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.success", is(false)))
 				.andExpect(jsonPath("$.reason", is("Hindi maaaring i-save ang order. Hindi mahanap ang customer.")));
+		
+		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Order.class));
 	}
 	
 	
@@ -222,6 +231,7 @@ public class OrderControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].value", isEmptyOrNullString()))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Customer ID is required")));
 		
+		Mockito.verify(customerService, Mockito.never()).getCustomer(Mockito.anyInt());
 		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Order.class));
 	}
 	
@@ -248,7 +258,8 @@ public class OrderControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("orderNumber")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(text_11_chars)))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Maximum of 10 characters only")));
-		
+
+		Mockito.verify(customerService, Mockito.never()).getCustomer(Mockito.anyInt());
 		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Order.class));
 	}
 	
@@ -273,22 +284,9 @@ public class OrderControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("totalAmount")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(expectedOrder.getTotalAmount().doubleValue())))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Decimal precision up to 2 places only")));
-		
+
+		Mockito.verify(customerService, Mockito.never()).getCustomer(Mockito.anyInt());
 		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Order.class));
-	}
-	
-	
-	@Test
-	public void testOrderrDelete_Success() throws Exception {
-		
-		mvc.perform(delete("/api/orders/2")
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.success", is(true)))
-				.andExpect(jsonPath("$.reason", isEmptyOrNullString()))
-				.andExpect(jsonPath("$.fieldErrors", isEmptyOrNullString()));
-		
-		Mockito.verify(dao, Mockito.times(1)).deleteById(Mockito.any(Integer.class));
 	}
 	
 	
@@ -312,8 +310,23 @@ public class OrderControllerTest {
 				.andExpect(jsonPath("$.fieldErrors[0].name", is("totalAmount")))
 				.andExpect(jsonPath("$.fieldErrors[0].value", is(expectedOrder.getTotalAmount().doubleValue())))
 				.andExpect(jsonPath("$.fieldErrors[0].message", is("Hanggang 2 precision lang")));
-		
+
+		Mockito.verify(customerService, Mockito.never()).getCustomer(Mockito.anyInt());
 		Mockito.verify(dao, Mockito.never()).save(Mockito.any(Order.class));
+	}
+	
+	
+	@Test
+	public void testOrderrDelete_Success() throws Exception {
+		
+		mvc.perform(delete("/api/orders/2")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.reason", isEmptyOrNullString()))
+				.andExpect(jsonPath("$.fieldErrors", isEmptyOrNullString()));
+		
+		Mockito.verify(dao, Mockito.times(1)).deleteById(Mockito.any(Integer.class));
 	}
 
 }
